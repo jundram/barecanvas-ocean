@@ -1,0 +1,166 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,500&family=Inter:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-abyss text-foam;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(185, 150, 89, 0.28);
+}
+
+/* thin, quiet scrollbar so it doesn't fight the visuals */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(110, 122, 116, 0.3);
+  border-radius: 999px;
+}
+
+/* soft film-grain — a barely-there analogue texture over the whole frame */
+.grain::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNjAiIGhlaWdodD0iMTYwIj48ZmlsdGVyIGlkPSJuIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC45IiBudW1PY3RhdmVzPSIyIiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI24pIi8+PC9zdmc+");
+}
+
+/* cinematic vignette — sits between the seascape canvas and the content,
+   drawing the eye toward the centre of the frame like a lens would */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(ellipse 130% 100% at 50% 44%, transparent 58%, rgba(10, 16, 24, 0.22) 100%);
+}
+
+.text-shadow-soft {
+  text-shadow: 0 1px 24px rgba(12, 20, 29, 0.28), 0 1px 2px rgba(12, 20, 29, 0.12);
+}
+
+@keyframes driftY {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+.animate-drift {
+  animation: driftY 6s ease-in-out infinite;
+}
+
+/* ---- cinematic backdrop layers ---- */
+
+/* drifting mist — two soft blurred veils moving at different speeds */
+.mist-layer {
+  position: absolute;
+  left: -25%;
+  width: 150%;
+  height: 45%;
+  filter: blur(28px);
+  pointer-events: none;
+}
+.mist-a {
+  bottom: 18%;
+  background: radial-gradient(ellipse 55% 60% at 40% 55%, rgba(255, 252, 244, 0.16), transparent 70%);
+  animation: mistDriftA 110s ease-in-out infinite alternate;
+}
+.mist-b {
+  bottom: 4%;
+  background: radial-gradient(ellipse 60% 55% at 65% 45%, rgba(244, 248, 252, 0.12), transparent 70%);
+  animation: mistDriftB 150s ease-in-out infinite alternate;
+}
+@keyframes mistDriftA {
+  0% { transform: translateX(-4%); }
+  100% { transform: translateX(5%); }
+}
+@keyframes mistDriftB {
+  0% { transform: translateX(4%); }
+  100% { transform: translateX(-5%); }
+}
+
+/* soft light rays falling from the upper part of the frame */
+.rays-layer {
+  background:
+    linear-gradient(115deg, transparent 42%, rgba(255, 246, 224, 0.20) 47%, transparent 53%),
+    linear-gradient(100deg, transparent 58%, rgba(255, 248, 232, 0.14) 63%, transparent 69%),
+    linear-gradient(125deg, transparent 24%, rgba(255, 246, 224, 0.10) 30%, transparent 37%);
+  mix-blend-mode: screen;
+  filter: blur(14px);
+  transform-origin: 60% -10%;
+  animation: raysSway 65s ease-in-out infinite alternate;
+}
+@keyframes raysSway {
+  0% { transform: rotate(-1.6deg) scale(1.05); opacity: 0.85; }
+  100% { transform: rotate(1.6deg) scale(1.08); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mist-a, .mist-b, .rays-layer, .animate-drift {
+    animation: none;
+  }
+}
+
+/* ---- stilled sections: floating editorial glass panel ----
+   The frozen film stays fully visible; each section's content sits in a
+   centred, softly blurred card carrying the only gradient on the page. */
+.panel-glass {
+  border-radius: 18px;
+  padding: clamp(1.75rem, 5vw, 4rem);
+  background: linear-gradient(
+    to bottom right,
+    rgba(240, 246, 244, 0.82),
+    rgba(226, 239, 238, 0.68) 45%,
+    rgba(214, 233, 233, 0.76)
+  );
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 24px 80px rgba(7, 13, 20, 0.28);
+}
+
+/* Ink type inside the panels (body flag set by the backdrop on every page
+   except home). Scoped to main only — the nav and footer float directly
+   over the film and keep their light foam type. */
+body[data-surface="light"] main :is(.text-foam, .text-foam\/95) {
+  color: #22333B;
+}
+body[data-surface="light"] main :is(.text-foam\/90, .text-foam\/85, .text-foam\/80) {
+  color: rgba(34, 51, 59, 0.85);
+}
+body[data-surface="light"] main :is(.text-foam\/75, .text-foam\/70, .text-foam\/60) {
+  color: rgba(34, 51, 59, 0.64);
+}
+body[data-surface="light"] main :is(.text-foam\/50, .text-foam\/40) {
+  color: rgba(34, 51, 59, 0.45);
+}
+body[data-surface="light"] main .text-shadow-soft {
+  text-shadow: none;
+}
+body[data-surface="light"] main .border-foam {
+  border-color: rgba(34, 51, 59, 0.7);
+}
+body[data-surface="light"] main .border-cyanglow {
+  border-color: rgba(34, 51, 59, 0.75);
+}
+body[data-surface="light"] main :is(.bg-foam\/40, .bg-foam\/50) {
+  background-color: rgba(34, 51, 59, 0.35);
+}
+body[data-surface="light"] main .via-foam\/30 {
+  --tw-gradient-stops: var(--tw-gradient-from, transparent), rgba(34, 51, 59, 0.28), var(--tw-gradient-to, transparent);
+}
