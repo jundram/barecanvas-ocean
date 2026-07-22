@@ -117,7 +117,7 @@ export default function VideoBackdrop() {
       const cur = vids[active];
       const nxt = vids[1 - active];
 
-      if (reduced || !isHomeRef.current) {
+      if (!isHomeRef.current) {
         // stilled sections: hold the frame, no motion at all
         if (!cur.paused) cur.pause();
         if (!nxt.paused) nxt.pause();
@@ -128,20 +128,34 @@ export default function VideoBackdrop() {
         return;
       }
 
+      // The home film is the core of the site, so it plays even under
+      // "Reduce Motion" — we only drop the scroll-reactive speed changes
+      // there, keeping a single calm, constant drift.
       if (cur.paused && !cur.ended) ensurePlaying(cur);
+
+      if (reduced) {
+        rate = RATE;
+        if (Math.abs(cur.playbackRate - RATE) > 0.005) cur.playbackRate = RATE;
+        if (Math.abs(nxt.playbackRate - RATE) > 0.005) nxt.playbackRate = RATE;
+        lastScrollY = window.scrollY;
+        // still advance the loop crossfade below
+      }
 
       // scroll-responsive playback: scroll speed (either direction) leans
       // on the accelerator; a low-pass filter and an eased return glide
-      // the rate back down to the resting drift when scrolling stops
-      const dy = Math.abs(window.scrollY - lastScrollY);
-      lastScrollY = window.scrollY;
-      const instVel = dy / dt;
-      velocity += (instVel - velocity) * Math.min(dt * 6, 1);
-      const targetRate = Math.min(RATE + velocity * 0.00045, MAX_RATE);
-      rate += (targetRate - rate) * Math.min(dt * 3, 1);
+      // the rate back down to the resting drift when scrolling stops.
+      // Skipped under Reduce Motion (rate stays at the calm base above).
+      if (!reduced) {
+        const dy = Math.abs(window.scrollY - lastScrollY);
+        lastScrollY = window.scrollY;
+        const instVel = dy / dt;
+        velocity += (instVel - velocity) * Math.min(dt * 6, 1);
+        const targetRate = Math.min(RATE + velocity * 0.00045, MAX_RATE);
+        rate += (targetRate - rate) * Math.min(dt * 3, 1);
 
-      if (Math.abs(cur.playbackRate - rate) > 0.005) cur.playbackRate = rate;
-      if (Math.abs(nxt.playbackRate - rate) > 0.005) nxt.playbackRate = rate;
+        if (Math.abs(cur.playbackRate - rate) > 0.005) cur.playbackRate = rate;
+        if (Math.abs(nxt.playbackRate - rate) > 0.005) nxt.playbackRate = rate;
+      }
 
       const dur = cur.duration;
       if (Number.isFinite(dur) && dur > 0) {
