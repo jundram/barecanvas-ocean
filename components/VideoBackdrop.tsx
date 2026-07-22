@@ -63,6 +63,15 @@ export default function VideoBackdrop() {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const vids: HTMLVideoElement[] = [a, b];
     vids.forEach((v) => {
+      // iOS only autoplays a video it is CERTAIN is muted and inline.
+      // React doesn't reliably reflect the `muted` prop onto the DOM node,
+      // so set both properties imperatively before any play() call — this
+      // is the difference between a black box and a playing film on iPhone.
+      v.muted = true;
+      v.defaultMuted = true;
+      v.setAttribute("muted", "");
+      v.setAttribute("playsinline", "");
+      v.setAttribute("webkit-playsinline", "");
       v.playbackRate = RATE;
     });
     let active = 0;
@@ -76,6 +85,19 @@ export default function VideoBackdrop() {
       const p = v.play();
       if (p) p.catch(() => {});
     };
+
+    // Kick playback on the first user gesture as a fallback: iOS sometimes
+    // refuses the initial programmatic play() (notably right after load or
+    // in some Low Power states), but honours it once the user touches or
+    // scrolls. One-shot, then removed.
+    const kick = () => {
+      if (isHomeRef.current) ensurePlaying(vids[active]);
+    };
+    const kickEvents = ["touchstart", "pointerdown", "scroll", "click"];
+    kickEvents.forEach((e) =>
+      window.addEventListener(e, kick, { once: true, passive: true })
+    );
+
     a.style.opacity = "1";
     b.style.opacity = "0";
 
@@ -140,7 +162,10 @@ export default function VideoBackdrop() {
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      kickEvents.forEach((e) => window.removeEventListener(e, kick));
+    };
   }, []);
 
   const overlayTransition = { transition: "opacity 700ms ease" };
@@ -151,8 +176,12 @@ export default function VideoBackdrop() {
         ref={vidA}
         src={SRC}
         muted
+        autoPlay
+        loop={false}
         playsInline
         preload="auto"
+        webkit-playsinline="true"
+        x5-playsinline="true"
         className="absolute inset-0 w-full h-full object-cover"
         style={{ opacity: 1, zIndex: 2 }}
       />
@@ -162,6 +191,8 @@ export default function VideoBackdrop() {
         muted
         playsInline
         preload="auto"
+        webkit-playsinline="true"
+        x5-playsinline="true"
         className="absolute inset-0 w-full h-full object-cover"
         style={{ opacity: 0, zIndex: 1 }}
       />
