@@ -205,7 +205,7 @@ export default function VideoBackdrop() {
         preload="auto"
         webkit-playsinline="true"
         x5-playsinline="true"
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover object-[30%_center] sm:object-center"
         style={{ opacity: 1, zIndex: 2 }}
       />
       <video
@@ -216,7 +216,7 @@ export default function VideoBackdrop() {
         preload="auto"
         webkit-playsinline="true"
         x5-playsinline="true"
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover object-[30%_center] sm:object-center"
         style={{ opacity: 0, zIndex: 1 }}
       />
 
