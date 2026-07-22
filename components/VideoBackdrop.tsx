@@ -86,17 +86,26 @@ export default function VideoBackdrop() {
       if (p) p.catch(() => {});
     };
 
-    // Kick playback on the first user gesture as a fallback: iOS sometimes
-    // refuses the initial programmatic play() (notably right after load or
-    // in some Low Power states), but honours it once the user touches or
-    // scrolls. One-shot, then removed.
-    const kick = () => {
-      if (isHomeRef.current) ensurePlaying(vids[active]);
-    };
-    const kickEvents = ["touchstart", "pointerdown", "scroll", "click"];
-    kickEvents.forEach((e) =>
-      window.addEventListener(e, kick, { once: true, passive: true })
-    );
+    // Kick playback on a real user gesture as a fallback for iOS, which
+    // sometimes refuses the initial programmatic play(). Only touchend /
+    // click / pointerup count as user activation for media — scroll and
+    // touchstart do NOT — and we must NOT disarm on a failed attempt, so
+    // this keeps listening on every tap until the film is truly playing,
+    // then detaches.
+    const kickEvents = ["touchend", "pointerup", "click"];
+    const detachKick = () =>
+      kickEvents.forEach((e) => window.removeEventListener(e, kick));
+    function kick() {
+      if (!isHomeRef.current) return;
+      const v = vids[active];
+      const p = v.play();
+      if (p) {
+        p.then(() => {
+          if (!v.paused) detachKick();
+        }).catch(() => {});
+      }
+    }
+    kickEvents.forEach((e) => window.addEventListener(e, kick, { passive: true }));
 
     a.style.opacity = "1";
     b.style.opacity = "0";
@@ -164,7 +173,7 @@ export default function VideoBackdrop() {
     raf = requestAnimationFrame(tick);
     return () => {
       cancelAnimationFrame(raf);
-      kickEvents.forEach((e) => window.removeEventListener(e, kick));
+      detachKick();
     };
   }, []);
 
