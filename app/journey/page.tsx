@@ -31,7 +31,7 @@ export default function JourneyPage() {
     <div className="pt-32 pb-24 px-5 sm:px-10 max-w-5xl mx-auto">
       <div className="panel-glass">
         <div className="max-w-2xl mx-auto text-center text-foam">
-          <DriftHeading eyebrow="V · Where the Story Began">
+          <DriftHeading eyebrow="VI · Where the Story Began">
             Bare<span className="italic">Canvas</span>
           </DriftHeading>
 

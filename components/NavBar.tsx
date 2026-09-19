@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import {
-  Compass, PenLine, ChefHat, Sparkles, User, Settings as SettingsIcon, Camera, X,
+  Compass, PenLine, ChefHat, Sparkles, User, Settings as SettingsIcon, Camera, X, ScanSearch,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -13,6 +13,7 @@ const NAV = [
   { href: "/kitchen", label: "Kitchen", icon: ChefHat },
   { href: "/blueprint", label: "Soul Blueprint", icon: Sparkles },
   { href: "/moments", label: "Moments", icon: Camera },
+  { href: "/taxlens", label: "TaxLens", icon: ScanSearch },
   { href: "/journey", label: "Journey", icon: User },
   { href: "/account", label: "Account", icon: SettingsIcon },
 ];

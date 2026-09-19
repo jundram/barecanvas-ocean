@@ -126,10 +126,25 @@ export default function HomeJourney({
         </Reveal>
       </section>
 
-      {/* V — Journey, as the sky pales toward dawn again */}
+      {/* V — TaxLens, the research: the ledger read by the light of its peers */}
+      <section className="min-h-[100svh] flex items-center justify-center px-6 py-28">
+        <Reveal className="max-w-2xl mx-auto w-full text-center">
+          <Chapter numeral="V" label="The Ledger Beneath the Tide" />
+          <h2 className="font-display font-light text-huge tracking-[-0.01em] text-shadow-soft">
+            Tax<span className="italic">Lens</span>
+          </h2>
+          <p className="mt-10 text-lg sm:text-2xl font-display italic font-light leading-[1.7] opacity-95 text-shadow-soft">
+            Finding tax returns that don&rsquo;t look like their peers — a
+            capstone in explainable machine learning, with a scorer you can try.
+          </p>
+          <ChapterLink href="/taxlens">Look through the lens</ChapterLink>
+        </Reveal>
+      </section>
+
+      {/* VI — Journey, as the sky pales toward dawn again */}
       <section className="min-h-[100svh] flex flex-col items-center justify-center text-center px-6 py-28">
         <Reveal>
-          <Chapter numeral="V" label="Where the Story Began" />
+          <Chapter numeral="VI" label="Where the Story Began" />
           <h2 className="font-display font-light text-huge tracking-[-0.01em] text-shadow-soft">
             Journey
           </h2>
